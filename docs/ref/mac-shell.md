@@ -4,6 +4,7 @@ shell 常用命令
 环境相关
 ---------------
 当前 macos 版本 10.14
+
 ```shell
 $ cat /System/Library/CoreServices/SystemVersion.plist |awk '/ProductVersion/{getline;v=$0;gsub(/\t*<\/*string>/,"",v); print v}'
 > 10.14
@@ -26,6 +27,7 @@ $ cat /System/Library/CoreServices/SystemVersion.plist |awk '/ProductVersion/{ge
 |\$@|参数表||
 |\$#|参数个数||
 
+* $PATH
 
 ``` shell
 $ echo $PATH # 显示变量$PATH
@@ -35,6 +37,53 @@ $ myText="hello world"  # 设置变量myText的值  ，只对当前进程有效
 file> local value01=123 # 只对当前shell脚本有效
 ```
 
+* env
+
+``` shell
+$  env
+> 
+TERM_PROGRAM=Apple_Terminal
+SHELL=/bin/bash
+TERM=xterm-256color
+TMPDIR=/var/folders/6l/q6p00dzn4klcyqhsf_f6rnpm0000gn/T/
+Apple_PubSub_Socket_Render=/private/tmp/com.apple.launchd.DuMS6fnMgQ/Render
+TERM_PROGRAM_VERSION=421
+TERM_SESSION_ID=7E80360F-DF05-4DD3-BBD7-06767120DB4B
+USER=xxxx
+SSH_AUTH_SOCK=/private/tmp/com.apple.launchd.B0oODDW1sP/Listeners
+PATH=/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/opt/X11/bin:/Applications/Wireshark.app/Contents/MacOS
+PWD=/Users/xxxx
+LANG=en_US.UTF-8
+XPC_FLAGS=0x0
+XPC_SERVICE_NAME=0
+SHLVL=1
+HOME=/Users/xxxx
+LOGNAME=xxxx
+LC_CTYPE=en_US.UTF-8
+DISPLAY=/private/tmp/com.apple.launchd.83VIc3mFjA/org.macosforge.xquartz:0
+_=/usr/bin/env
+```
+
+* set
+
+``` shell
+$ set
+> 
+Apple_PubSub_Socket_Render=/private/tmp/com.apple.launchd.DuMS6fnMgQ/Render
+BASH=/bin/bash
+BASH_ARGC=()
+BASH_ARGV=()
+BASH_LINENO=()
+BASH_REMATCH=([0]="g")
+BASH_SOURCE=()
+BASH_VERSINFO=([0]="3" [1]="2" [2]="57" [3]="1" [4]="release" [5]="x86_64-apple-darwin18")
+BASH_VERSION='3.2.57(1)-release'
+COLUMNS=80
+DIRSTACK=()
+...
+```
+
+
 ### 引号
 |命令|样例|说明|
 |---|---|---|
@@ -42,20 +91,128 @@ file> local value01=123 # 只对当前shell脚本有效
 |""|"hello $userName"|解析引号内的变量|
 |\`\`| echo \`date\`|引用命令的执行结果|
 
+``` shell
+$ name='zhangsan'
+$ hi="hello $name"
+$ echo $hi
+> hello zhangsan
+```
+
 ### 流程
 
 |命令|样例|说明|
 |---|---|---|
-|if |if test 2 -lt 1 ;then <br> echo 1<br> elif [ 3 -gt 2 ] ;then <br> echo 2; <br>else echo 3<br> fi||
-|for | for ((i=0;i<10;i++)) <br>  do <br> echo $i <br> done||
-|for | for i in 0 1 2 3 <br> do <br> echo $i <br> done||
-|for | for i in {0..3} <br> do <br> echo $i <br> done||
-|while | C=0 <br> while [ $C -lt 5 ] <br> do <br>  C=\`expr $C + 1\` <br> echo $C <br> done||
-|while | echo "input num , ctrl+c done" <br> while read NUM ; do <br> echo "get NUM is $NUM" <br> done||
+|if |if ...;then ...; elif ... ;then ...;else ...; fi||
+|for | for ((i=0;i<10;i++)) ; do ... ; done <br> for i in 0 1 2 3 ; do ... ; done <br> for i in {0..3} ; do ... ; done||
+|while | C=0 ; while [ $C -lt 5 ] ; do  C=`expr $C + 1` ; echo $C ; done||
 |break|break 跳出所有循环 break n 跳出第n层循环||
 |continue|跳出当前循环||
-|[ $a -lt $b ]| ，[] 等同于 test||
-|case| N=3 <br> case $N in <br> 1) <br> echo 1 <br> ;; <br> 2) <br> echo 2 <br> ;; <br> *) echo "num is $N" <br> ;; <br> esac ||
+|case| N=3 ; case $N in  1) ... ; ;; *) ... ; ;; esac ||
+
+* if
+
+``` shell
+$ if [ $a -gt 2 ] ; then echo "$a > 2 "; fi
+
+> 3 > 2 
+
+$ if [ $a -lt 2 ] 
+  then 
+    echo "$a < 2"
+  elif [ $a -gt 2 ]
+  then
+    echo "$a > 2"
+  else
+    echo "$a = 2"
+  fi
+ 
+> 3 > 2
+
+$ a=2
+$ if [ $a -lt 2 ] ; then  echo "$a < 2"; elif [ $a -gt 2 ]; then echo "$a > 2"; else echo "$a = 2"; fi
+
+> 2 = 2
+```
+
+* for
+
+``` shell
+$ for ((i=0;i<3;i++)) 
+  do 
+    echo $i 
+  done
+
+> 0
+1
+2
+
+$ for i in 0 1 2 3 
+  do 
+    echo $i 
+  done
+
+> 0
+1
+2
+3
+
+$ for i in {0..3} 
+  do 
+    echo $i 
+  done
+
+> 0
+1
+2
+3
+```
+
+* while
+
+``` shell
+$ C=0 
+$ while [ $C -lt 5 ] 
+  do 
+    C=`expr $C + 1` 
+    echo $C 
+  done
+  
+> 1
+2
+3
+4
+5
+
+$ echo "input num , ctrl+c done" 
+$ while read NUM ; do 
+    echo "get NUM is $NUM" 
+  done
+
+> get NUM is
+< 2
+> get NUM is 2
+< ^C
+
+```
+
+* case
+
+``` shell
+$ N=3 
+$ case $N in 
+    1) 
+      echo 1 
+    ;; 
+    2) 
+       echo 2 
+    ;; 
+    *) 
+       echo "num is $N" 
+    ;; 
+  esac
+  
+> num is 3
+```
 
 ### 运算
 
@@ -116,7 +273,6 @@ $ echo ${a[@]}
 > 1 2 3 5
 ```
 
-
 ### 管道
 
 |命令|样例|说明|
@@ -168,3 +324,10 @@ $ echo ${a[@]}
 
 ### 参考
 - [shell 笔记（Mac 版）](https://www.jianshu.com/p/f7ef4f95f5c6)
+
+
+
+  
+  
+  
+  
