@@ -1,0 +1,4 @@
+collections:
+  refs:
+    output: true
+    permalink: /ref/:name
