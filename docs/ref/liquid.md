@@ -6,6 +6,7 @@ title: Liquid 语法样例
 
 
 - 输出变量的值
+
 > &#123;&#123;page.title}}` = {{page.title}}
 
 - 流程：条件控制
@@ -20,11 +21,11 @@ title: Liquid 语法样例
 
 - 过滤器
 
-> &#123;&#123; "/my/fancy/url" | append: ".html" }}
+> &#123;&#123; "/my/fancy/url" &#124; append: ".html" }}
 >
 > = {{ "/my/fancy/url" | append: ".html" }}
 > 
-> &#123;&#123; "adam!" | capitalize | prepend: "Hello " }}
+> &#123;&#123; "adam!" &#124; capitalize &#124; prepend: "Hello " }}
 > 
 > = {{ "adam!" | capitalize | prepend: "Hello " }}
 
@@ -294,7 +295,68 @@ I am being captured.
 |uniq|[1,2,3,3,2,2]>>{{'1,2,3,3,2,2'|split:','|uniq}}|删除重复数据，保留唯一值|
 
 
+## filters in jekyll
+
+|filter|example|desc|
+|:---:|---|---|
+|relative_url|||
+|absolute_url|||
+|where|site.members:"graduation_year","2014"|member.graduation_year==2014|
+|where_exp|site.members:"item","item.graduation_year < 2014" |>=3.2.0|
+|group_by|site.members:"graduation_year" <br> >> [{"name"=>"2013", "items"=>[...]},{"name"=>"2014", "items"=>[...]}]||
+|group_by_exp|site.members: "item", "item.graduation_year &#124;truncate: 3, ''" <br> >>[{"name"=>"201", "items"=>[...]},{"name"=>"200", "items"=>[...]}]|>=3.4.0|
+|xml_escape|||
+|cgi_escape||%XX|
+|uri_escape|||
+|number_of_words|||
+|array_to_sentence_string|[1,2,3]>>{{'1,2,3'|split:','|array_to_sentence_string:'or'}}|[最后的连接字符串]|
+|markdownify||md to html|
+|smartify|||
+|sassify|||
+|scssify|||
+|slugify| {{ "The _config.yml file" | slugify }} <br> {{ "The _config.yml file" | slugify: "pretty" }} <br> {{ "The _cönfig.yml file" | slugify: "ascii" }} <br> {{ "The cönfig.yml file" | slugify: "latin" }}|参数：none<br>raw 过滤空白字符<br>default 非数字和字符串<br>pretty 特殊字符<br>ascii<br>latin  >=3.7.0<br>]|
+|jsonify|[1,2,3]>>{{'1,2,3'|split:','|jsonify}}|to JSON|
+|normalize_whitespace||替换多余的空白为单个空格|
+|sort|site.pages: "title", "last" |[属性],[first,last]依据属性值排序,当属性不存在时排序在前或在后|
+|sample|[1,2,3,4]:2 >> {{'1,2,3,4'|split:','|sample:2}} |[个数]随机获取元素|
+|array filters||push:val <br> pop <br> shift <br> unshift:val|
+|inspect|[1,2,3] >> {{'1,2,3'|split:','|inspect}}|转换对象为字符串 用于调试|
+
+
+## jekyll tags
+
+**- highlight**
+
+{% raw %}
+{% highlight ruby linenos%}
+def foo
+  puts 'foo'
+end
+{% endhighlight %}
+{% endraw %}
+>
+{% highlight ruby linenos %}
+def foo
+  puts 'foo'
+end
+{% endhighlight %}
+
+**- link**
+
+link 和 post_url 的目标文件必须已存在
+{% raw %}
+{{ site.baseurl }}{% link about.md %}
+{{ site.baseurl }}{% post_url 2010-07-21-name-of-post %}
+{% endraw %}
+{{ site.baseurl }}{% link about.md %}
+[end]
+
+
 * [liquid](http://shopify.github.io/liquid)
 * liquid - [cn](https://liquid.bootcss.com/basics/introduction/)
+* [jekyll liquid](https://jekyllrb.com/docs/liquid/filters/)
 * dateformat [sftime](http://strftime.net/)
 * date input format [time](https://ruby-doc.org/stdlib-2.5.3/libdoc/time/rdoc/Time.html#method-c-parse)
+
+* highlight [lexers](http://pygments.org/docs/lexers/)
+* highlight [languages](https://github.com/jneen/rouge/wiki/List-of-supported-languages-and-lexers)
