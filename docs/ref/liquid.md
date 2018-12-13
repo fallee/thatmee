@@ -348,7 +348,7 @@ link 和 post_url 的目标文件必须已存在
 {{ site.baseurl }}{% link about.md %}
 {{ site.baseurl }}{% post_url 2010-07-21-name-of-post %}
 {% endraw %}
-{{ site.baseurl }}{% link about.md %}
+
 
 
 [end]
