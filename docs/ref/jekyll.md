@@ -1,5 +1,7 @@
 ---
 title: jekyll 参考样例
+categories: [ref,jekyll]
+tags: [ref,jekyll]
 ---
 
 ## values
@@ -20,7 +22,7 @@ title: jekyll 参考样例
 |html_pages[]|{layout,title,content,dir,name,path,url}|
 |html_files|{{site.html_files|size}}|
 |collections|{{site.collections|size}} _config.yml>collections>[CUSTOM_COLLECTION_NAME]|
-|collections[]|{output,directory,relative_directory,files,label,docs,}|
+|collections[]|{output,directory,relative_directory,files,label,docs}|
 |site.[CUSTOM_COLLECTION_NAME]|_[CUSTOM_COLLECTION_NAME]/files , obj like posts[]|
 |data.*|_data/*.yml|
 |documents|collections中的所有文件集合|
@@ -28,9 +30,13 @@ title: jekyll 参考样例
 |site.tags.TAG|The list of all Posts with tag TAG|
 |site.url|{{site.url}}|
 |site.[CONFIGURATION_DATA]|_config.yml中定义的属性|
-|site.document&#124;map:'categories'&#124;compact&#124;uniq|{{site.documents|map:'categories'|compact|uniq|inspect}} 所有的分类集合|
+|site.documents&#124;map:'categories'&#124;compact&#124;uniq|{{site.documents|map:'categories'|compact|uniq|inspect}} 所有的分类集合|
 
-{{site.documents|map:'categories'|inspect}}
+{{site.collections|map:'label'|jsonify}}
+
+
+{{site.documents|map:'categories'|jsonify}}
+
 
 {% for item in site.categories %}
 {{item|inspect}}
