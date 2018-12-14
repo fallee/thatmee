@@ -1,5 +1,10 @@
 ---
 title: Liquid 语法样例
+categories: [ref,liquid]
+tags: [ref,liquid,demo]
+obj01: 
+  val01: '张三'
+  val 02: '李四'
 ---
 
 ## 基本语法
@@ -108,6 +113,30 @@ I am being captured.
 {% endfor %} 
 >> {{beatles[1]}}
 
+`Object`
+> obj.attr
+> obj['attr']
+
+page.title > {{page.title}}  
+page['title'] > {{page["title"]}}  
+{% assign t01='title' %}
+t01='title',page[t01] > {{page[t01]}}  
+
+{% assign page.a='a' %}
+{% assign page["a b"]=2 %}
+
+> 文件头上的定义  
+obj01:  
+  val01: '张三'  
+  val 02: '李四'  
+
+page.obj01 = {{page.obj01|jsonify}}  
+page.obj01['val 02'] = {{page.obj01['val 02']}}
+
+
+empty = {{empty|jsonify}}
+
+
 ## 过滤流程中的空白字符
 
 &#123;&#123;-,-}}
@@ -155,6 +184,8 @@ I am being captured.
 ```
 % for product in collection.products %
 ...
+% else %
+# 空数组
 % endfor %
 ```
 
@@ -189,6 +220,38 @@ I am being captured.
 % for item in array reversed %
 ```
 
+{% assign num=20 %}
+{%- for i in (1..num) reversed limit:2  offset:2 -%}
+  `{{- i -}}`  
+{%- endfor -%}
+  
+&nbsp;
+  
+```liquid
+forloop.first bool
+forloop.last  bool
+forloop.index number
+forloop.index0 number 0起始
+forloop.length number
+forloop.rindex
+forloop.rindex0
+```
+
+{% for i in (1..5) %}
+  {% if forloop.first %}
+    is first
+  {% endif %}
+  {% if forloop.last %}
+    is end
+  {% endif %}
+  index > {{forloop.index}}
+  index0 > {{forloop.index0}}
+  rindex > {{forloop.rindex}}
+  rindex0 > {{forloop.rindex0}}
+{% endfor %}
+
+
+
 ## cycle
 
 ```
@@ -201,21 +264,64 @@ I am being captured.
 ## table 
 
 ```
+<table>
 % tablerow product in collection.products %  # tr class=row1
   > product.title # td class=col1, td class=col2
 % endtablerow %
+</table>
 ```
 
 ```
+<table>
 % tablerow product in collection.products cols:2 % # tr class=row1,tr class=row2
   > product.title # td class=col1, td class=col2
 % endtablerow %
+</table>
 ```
 
 ```
 % tablerow product in collection.products cols:2 limit:3 %
 % tablerow product in collection.products cols:2 offset:3 %
 ```
+
+tablerowloop
+* index
+* index0
+* rindex
+* rindex0
+* col
+* col0
+* first
+* last
+* col_first
+* col_last
+
+
+<table>
+{% tablerow i in (1..20) cols:5 limit:10 %}
+i = {{i}} <br>  
+index0 = {{tablerowloop.index0}} <br>  
+col0 = {{tablerowloop.col0}} <br>  
+<br>
+  {% if tablerowloop.first %}
+i in 1..20 cols:5 limit:10
+length = {{tablerowloop.length}} <br>
+is first <br>  
+  {% endif %}
+  {% if tablerowloop.col_first %}
+is col_first <br>  
+  {% endif %} 
+  {% if tablerowloop.col_last %}
+is col_last <br>  
+  {% endif %} 
+  {% if tablerowloop.last %}
+is last <br>
+  {% endif %}  
+{% endtablerow %}
+</table>
+
+
+
 
 ## raw 
 
@@ -275,6 +381,7 @@ I am being captured.
 |truncatewords||截断词组|
 |url_decode|||
 |url_encode|||
+|reverse string|string&#124;split:''&#124;reverse&#124;join:'' > {{'abc'|split:''|reverse|join:''}}|反向字符串|
 |**日期**|||
 |date|'now':%Y-%m-%d %H:%M:%S >> {{ "now" | date: "%Y-%m-%d %H:%M:%S" }} <br> '2018-12-13 23:13:24 +0800':"%F %T" >> {{'2018-12-13 23:13:24 +0800'|date:"%F %T"}}||
 |**工具**||| 
@@ -284,7 +391,7 @@ I am being captured.
 |join|[1,2]:'-' >> {{ '1,2'|split:',' | join: "-" }}||
 |array.first|[1,2].first >> {% assign arr01 = '1,2'|split:','%} {{arr01.first}}||
 |array.last|[1,2].last >> {{arr01.last}}||
-|compact|assign site_categories = site.pages &#124; map: 'category' &#124; compact |删除数组中所有 nil 值|
+|compact|assign site_categories = site.pages &#124; map: 'category' &#124; compact |删除数组中所有 nil 值,并合并子数组|
 |concat|a=1,2;b=5,6;a :b >> {% assign a = '1,2' | split: ',' %} {% assign b = '5,6' | split: ',' %} {{a|concat:b}}|连接两个数组|
 |map|&#123;% assign cs = site.pages &#124; map: "category" %}|提取pages中每个page的category属性，组成新的数组 cs|
 |reverse|[1,2]>>{{'1,2' | split: ','|reverse}}||
@@ -319,7 +426,7 @@ I am being captured.
 |normalize_whitespace||替换多余的空白为单个空格|
 |sort|site.pages: "title", "last" |[属性],[first,last]依据属性值排序,当属性不存在时排序在前或在后|
 |sample|[1,2,3,4]:2 >> {{'1,2,3,4'|split:','|sample:2}} |[个数]随机获取元素|
-|array filters||push:val <br> pop <br> shift <br> unshift:val|
+|array filters|push:val , pop, shift, unshift:val|push:val <br> pop <br> shift <br> unshift:val|
 |inspect|[1,2,3] >> {{'1,2,3'|split:','|inspect}}|转换对象为字符串 用于调试|
 
 
@@ -345,11 +452,9 @@ end
 
 link 和 post_url 的目标文件必须已存在
 {% raw %}
-{{ site.baseurl }}{% link about.md %}
+{{ site.baseurl }}{% link about.md %}  
 {{ site.baseurl }}{% post_url 2010-07-21-name-of-post %}
 {% endraw %}
-
-
 
 [end]
 
