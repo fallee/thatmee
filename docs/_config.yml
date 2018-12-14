@@ -2,3 +2,5 @@ collections:
   refs:
     output: true
     permalink: /ref/:slug:output_ext
+
+theme: jekyll-theme-dinky
