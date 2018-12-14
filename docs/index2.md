@@ -1,5 +1,5 @@
 ---
-title:index2
+title: index2
 ---
 
 {{page.title}}
