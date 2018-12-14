@@ -1,4 +1,4 @@
 collections:
   refs:
     output: true
-    permalink: /ref/:title:output_ext
+    permalink: /ref/:slug:output_ext
