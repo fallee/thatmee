@@ -24,10 +24,10 @@ ThatMee.com
   
 参考手册
 -------------
-* [markdown 语法](/marked.html)  
-* [shell 常用命令 - mac os](https://thatmee.com/ref/mac-shell.html) [source](https://github.com/fallee/thatmee/blob/master/docs/ref/mac-shell.md)
-* [liquid 参考](/ref/liquid.html)
-  
+{% for page in site.refs %}
+* [{{page.title}}]({{page.url}}){{page.name}}
+{% endfor %}
+
   
   
   
